@@ -1,0 +1,29 @@
+This build bundles the following jars, identified by their maven
+address: <groupId>:<artifactId>:<version>
+
+   com.beust:jcommander:1.32
+   com.google.code.gson:gson:2.7
+   com.google.guava:guava:28.0-jre
+   com.google.protobuf:protobuf-java:2.5.0
+   commons-cli:commons-cli:1.2
+   commons-codec:commons-codec:1.4
+   commons-collections:commons-collections:3.2.2
+   commons-configuration:commons-configuration:1.10
+   commons-io:commons-io:2.4
+   commons-lang:commons-lang:2.4
+   commons-logging:commons-logging:1.1.1
+   javax.servlet:javax.servlet-api:3.1.0
+   jline:jline:2.11
+   org.apache.commons:commons-math:2.1
+   org.apache.commons:commons-vfs2:2.0
+   org.apache.htrace:htrace-core4:4.1.0-incubating
+   org.apache.htrace:htrace-core:3.1.0-incubating
+   org.apache.thrift:libthrift:0.9.3-1
+   org.eclipse.jetty:jetty-http:9.2.28.v20190418
+   org.eclipse.jetty:jetty-io:9.2.28.v20190418
+   org.eclipse.jetty:jetty-security:9.2.28.v20190418
+   org.eclipse.jetty:jetty-server:9.2.28.v20190418
+   org.eclipse.jetty:jetty-servlet:9.2.28.v20190418
+   org.eclipse.jetty:jetty-util:9.2.28.v20190418
+   org.slf4j:slf4j-api:1.7.21
+   org.slf4j:slf4j-log4j12:1.7.21

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. /usr/hdp/3.1.4.0-315/etc/default/hadoop
+. /usr/hdp/3.1.4.0-315/etc/default/accumulo
+
+export HDP_VERSION=${HDP_VERSION:-3.1.4.0-315}
+export ACCUMULO_OTHER_OPTS="-Dhdp.version=${HDP_VERSION} ${ACCUMULO_OTHER_OPTS}"
+
+exec /usr/hdp/3.1.4.0-315//accumulo/bin/accumulo.distro "$@"
