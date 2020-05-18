@@ -4,27 +4,12 @@ AutoProv: no
 %undefine __find_provides
 AutoReq: no
 %undefine __find_requires
-# Do not try autogenerate prereq/conflicts/obsoletes and check files
 %undefine __check_files
 %undefine __find_prereq
 %undefine __find_conflicts
 %undefine __find_obsoletes
-# Be sure buildpolicy set to do nothing
 %define __spec_install_post %{nil}
-# Something that need for rpm-4.1
 %define _missing_doc_files_terminate_build 0
-#dummy
-#dummy
-#BUILDHOST:    ctr-e139-1542663976389-113618-01-000003.hwx.site
-#BUILDTIME:    Fri Aug 23 05:14:28 2019
-#SOURCERPM:    accumulo_3_1_4_0_315-1.7.0.3.1.4.0-315.src.rpm
-
-#RPMVERSION:   4.11.3
-
-#OS:           linux
-#SIZE:           24215807
-#ARCHIVESIZE:           24267280
-#ARCH:         x86_64
 BuildArch:     x86_64
 Name:          accumulo_3_1_4_0_315
 Version:       1.7.1
@@ -82,16 +67,11 @@ Requires:      libstdc++.so.6(CXXABI_1.3)(64bit)
 Requires:      libstdc++.so.6(GLIBCXX_3.4)(64bit)  
 Requires:      libstdc++.so.6(GLIBCXX_3.4.11)(64bit)  
 Requires:      libstdc++.so.6(GLIBCXX_3.4.9)(64bit)  
-Requires:      redhat-lsb  
-#Requires:      rpmlib(CompressedFileNames) <= 3.0.4-1
-#Requires:      rpmlib(FileDigests) <= 4.6.0-1
-#Requires:      rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+Requires:      redhat-lsb
 Requires:      rtld(GNU_HASH)  
 Requires:      sh-utils  
 Requires:      zookeeper_3_1_4_0_315  
-#Requires:      rpmlib(PayloadIsXz) <= 5.2-1
-#suggest
-#enhance
+
 %description
 Apache Accumulo is a distributed key value store built on top of Apache Hadoop
 
@@ -99,17 +79,19 @@ prefix: %{buildroot}/usr/hdp/3.1.4.0-315/accumulo
 
 %pre 
 #!/bin/sh
-getent group accumulo >/dev/null || groupadd -r accumulo
-
-# Create an accumulo user if one does not already exist.
-getent passwd accumulo >/dev/null || /usr/sbin/useradd --comment "accumulo" --shell /bin/bash -M -r -g accumulo -G accumulo --home /var/lib/accumulo accumulo
 
 if [[ ! -e "/var/log/accumulo" ]]; then
-    /usr/bin/install -d -o accumulo -g accumulo -m 0755 /var/log/accumulo
+    useradd -m accumulo || echo "accumulo user already exists."
+    usermod -aG wheel accumulo
+    usermod -aG hadoop accumulo
+    /usr/bin/install -d -o accumulo -g hadoop -m 0755 /var/log/accumulo
 fi
 
 if [[ ! -e "/var/run/accumulo" ]]; then
-    /usr/bin/install -d -o accumulo -g accumulo -m 0755 /var/run/accumulo
+    useradd -m accumulo || echo "accumulo user already exists."
+    usermod -aG wheel accumulo
+    usermod -aG hadoop accumulo
+    /usr/bin/install -d -o accumulo -g hadoop -m 0755 /var/run/accumulo
 fi
 
 %global debug_package %{nil}
@@ -128,13 +110,11 @@ mkdir -p %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/doc
 mkdir -p %{buildroot}/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist
 mkdir -p %{buildroot}/usr/hdp/3.1.4.0-315/etc/default
 
-cp -a %{_sourcedir}/accumulo/lib/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
-cp -a %{_sourcedir}/accumulo/bin/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
-\cp %{_sourcedir}/accumulo/bin/accumulo /root/rpmbuild/BUILD/accumulo-1.7.1/bin/accumulo
-\cp %{_sourcedir}/accumulo/etc/accumulo %{buildroot}/usr/hdp/3.1.4.0-315/etc/default/accumulo
+cp -a %{_sourcedir}/accumulo/lib/ %{_builddir}/accumulo-%{version}/
+cp -a %{_sourcedir}/accumulo/bin/ %{_builddir}/accumulo-%{version}/
+\cp %{_sourcedir}/accumulo/etc/default/accumulo %{buildroot}/usr/hdp/3.1.4.0-315/etc/default/accumulo
 cp -a %{_builddir}/accumulo-%{version}/bin/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
 cp -a %{_builddir}/accumulo-%{version}/lib/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
-#cp -a %{_builddir}/accumulo-%{version}/conf/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
 cp -a %{_builddir}/accumulo-%{version}/logs/ %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/
 cp -R %{_builddir}/accumulo-%{version}/docs/. %{buildroot}/usr/hdp/3.1.4.0-315/accumulo/doc
 cp -a %{_builddir}/accumulo-%{version}/conf/examples/ %{buildroot}/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist/
@@ -167,7 +147,6 @@ ln -s /root/rpmbuild/BUILD/accumulo-1.7.1/conf %{buildroot}/usr/hdp/3.1.4.0-315/
 %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/bin/tdown.sh"
 %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/bin/tool.sh"
 %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/bin/tup.sh"
-#%attr(0777, root, root) "/usr/hdp/3.1.4.0-315/accumulo/conf"
 %dir %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/doc"
 %doc %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/doc/accumulo_user_manual.html"
 %doc %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/doc/administration.html"
@@ -249,13 +228,11 @@ ln -s /root/rpmbuild/BUILD/accumulo-1.7.1/conf %{buildroot}/usr/hdp/3.1.4.0-315/
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/jetty-util.jar"
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/jline.jar"
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/libthrift.jar"
-#%dir %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/native"
-#%attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/native/libaccumulo.so"
+%dir %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/native"
+%attr(0755, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/native/libaccumulo.so"
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/protobuf-java.jar"
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/slf4j-api.jar"
 %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/accumulo/lib/slf4j-log4j12.jar"
-#%attr(0777, root, root) "/usr/hdp/3.1.4.0-315/accumulo/logs"
-#%dir %attr(0775, root, root) "/usr/hdp/3.1.4.0-315/accumulo/walog"
 %dir %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist"
 %config %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist/accumulo.policy.example"
 %dir %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist/examples"
@@ -422,7 +399,6 @@ ln -s /root/rpmbuild/BUILD/accumulo-1.7.1/conf %{buildroot}/usr/hdp/3.1.4.0-315/
 %config %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist/templates/slaves"
 %config %attr(0755, root, root) "/usr/hdp/3.1.4.0-315/etc/accumulo/conf.dist/templates/tracers"
 %config %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/etc/default/accumulo"
-#%config %attr(0644, root, root) "/usr/hdp/3.1.4.0-315/etc/security/limits.d/accumulo.nofiles.conf"
 
 %post 
 #!/bin/sh
@@ -444,6 +420,16 @@ ln -s /etc/accumulo/3.1.4.0-315/0 /usr/hdp/3.1.4.0-315/accumulo/conf
 ln -s /var/log/accumulo /usr/hdp/3.1.4.0-315/accumulo/logs
 
 localedef -i en_US -f UTF-8 en_US.UTF-8
+
+%postun
+rm -rf /usr/hdp/3.1.4.0-315/accumulo
+rm -rf /usr/hdp/current/accumulo-client
+rm -rf /usr/hdp/current/accumulo-gc
+rm -rf /usr/hdp/current/accumulo-master
+rm -rf /usr/hdp/current/accumulo-monitor
+rm -rf /usr/hdp/current/accumulo-tablet
+rm -rf /usr/hdp/current/accumulo-tracer
+rm -rf /var/run/accumulo
 
 %changelog
 
